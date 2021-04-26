@@ -2,14 +2,12 @@ const socket = io();
 let connectionsUsers = [];
 let connectionInSupport = []; // Cria uma variável para armazenar os atendimentos
 
-socket.on('admin_list_all_users', connections => {
-  if (connections.length > 0) {
-    connectionsUsers = connections;
-  }
+socket.on('admin_list_all_users', connectionsWithoutAdmin => {
+  connectionsUsers = connectionsWithoutAdmin;
   document.getElementById('list_users').innerHTML = '';
 
   let template = document.getElementById('template').innerHTML;
-  connections.forEach(connection => {
+  connectionsWithoutAdmin.forEach(connection => {
     
     const rendered = Mustache.render(template, {
       email: connection.user.email,
@@ -20,9 +18,9 @@ socket.on('admin_list_all_users', connections => {
   })
 });
 
-function call(id) {
-  const connection = connectionsUsers.find(connections => 
-    connections.socket_id === id
+function call(socket_id) {
+  const connection = connectionsUsers.find(connection => 
+    connection.socket_id === socket_id
   )
 
   // Quando encontrar a conexão, coloca dentro do array de atendido
@@ -65,21 +63,20 @@ function call(id) {
 
       divMessages.appendChild(createDiv)
     })
-
   })
 }
 
-function sendMessage(id) {
-  const text = document.getElementById(`send_message_${id}`)
+function sendMessage(user_id) {
+  const text = document.getElementById(`send_message_${user_id}`)
 
   const params = {
     text: text.value,
-    user_id: id,
+    user_id,
   }
 
   socket.emit('admin_send_message', params);
 
-  const divMessages = document.getElementById(`allMessages${id}`);
+  const divMessages = document.getElementById(`allMessages${user_id}`);
 
   const createDiv = document.createElement('div');
   createDiv.className = 'admin_message_admin'
@@ -93,7 +90,7 @@ function sendMessage(id) {
 
 socket.on('admin_receive_message', data => {
   const connection = connectionInSupport.find(
-    (con) => con.socket_id === data.socket_id
+    (connection) => connection.socket_id === data.socket_id
   );
 
   const divMessages = document.getElementById(`allMessages${connection.user_id}`)

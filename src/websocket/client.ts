@@ -22,20 +22,18 @@ io.on('connect', (socket) => {
     const userExists = await usersService.findByEmail(email);
 
     if (userExists) {
-      const connection = await connectionsService.findByUserId(userExists.id);
+      user_id = userExists.id;
+      const connection = await connectionsService.findByUserId(user_id);
 
       if (!connection) {
         await connectionsService.create({
           socket_id,
-          user_id: userExists.id,
+          user_id,
         })
       } else {
         connection.socket_id = socket.id;
-
         await connectionsService.create(connection);
       }
-
-      user_id = userExists.id;
     } else {
       const user = await usersService.create(email);
 
@@ -72,9 +70,18 @@ io.on('connect', (socket) => {
       user_id
     })
 
+    // io: Servidor WebSocket;
+    // socket_id: ID da conexão aonde vai ser emitido o evento;
+    // Somente essa conexão vai ouvir o evento e executá-lo;
+    console.log(socket_admin_id)
     io.to(socket_admin_id).emit('admin_receive_message', {
       message,
       socket_id,
     })
+  })
+
+  socket.on('disconnect', async () => {
+    console.log(socket.id);
+    await connectionsService.deleteBySocketId(socket.id);
   })
 })

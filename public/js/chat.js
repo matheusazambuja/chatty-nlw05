@@ -18,8 +18,10 @@ document.querySelector("#start_chat").addEventListener("click", (event) => {
 
   socket.on('connect', () => {
     const params = {
-      email, text
+      email,
+      text
     }
+
     socket.emit('client_first_access', params, (call, err) => {
       if(err) {
         console.log(err);

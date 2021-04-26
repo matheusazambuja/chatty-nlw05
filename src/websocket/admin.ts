@@ -29,6 +29,9 @@ io.on('connect', async (socket) => {
 
     const { socket_id } = await connectionsService.findByUserId(user_id);
 
+    // io: Servidor WebSocket;
+    // socket_id: ID da conexão aonde vai ser emitido o evento;
+    // Somente essa conexão vai ouvir o evento e executá-lo;
     io.to(socket_id).emit('admin_send_to_client', {
       text,
       socket_id: socket.id
