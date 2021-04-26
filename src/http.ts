@@ -24,6 +24,7 @@ app.get('/pages/admin', (req, res) => {
 const http = createServer(app); // Criando protocolo http
 const io = new Server(http); // Criando protocolo websocket
 
+// Nova conexão dentro do protocolo WebSocket da aplicação
 io.on('connection', (socket: Socket) => {
   // console.log('Se conectou', socket.id);
 });

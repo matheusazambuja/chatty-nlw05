@@ -8,6 +8,8 @@ interface IParams {
   email: string;
 }
 
+// io: Servidor WebSocket
+// socket: É a conexão que recebeu a mensagem
 io.on('connect', (socket) => {
   const connectionsService = new ConnectionsService();
   const usersService = new UsersService();
